@@ -7,13 +7,28 @@ on:
   workflow_dispatch:
 
 jobs:
-  run-tasks:
-    name: Run FF14 Risingstone Tasks
+  run-tasks-account1:
+    name: Run FF14 Tasks - Account 1
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
-
       - uses: docker://ghcr.io/starhearthunt/ff14risingstone_sign_task:master
         with:
-          cookie: ${{ secrets.COOKIE }}
-          user_agent: ${{ secrets.USER_AGENT }}
+          cookie: ${{ secrets.COOKIE_ACCOUNT1 }}
+          user_agent: ${{ secrets.USER_AGENT_ACCOUNT1 }}
+          # 可选配置
+          check_house_remain: false
+          get_sign_reward: true
+
+  run-tasks-account2:
+    name: Run FF14 Tasks - Account 2
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: docker://ghcr.io/starhearthunt/ff14risingstone_sign_task:master
+        with:
+          cookie: ${{ secrets.COOKIE_ACCOUNT2 }}
+          user_agent: ${{ secrets.USER_AGENT_ACCOUNT2 }}
+          # 可选配置
+          check_house_remain: false
+          get_sign_reward: true
