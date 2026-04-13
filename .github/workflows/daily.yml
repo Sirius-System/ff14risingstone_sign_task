@@ -2,7 +2,6 @@ name: Daily Tasks
 
 on:
   schedule:
-    # Runs at 00:05 am UTC+8 every day
     - cron: "5 16 * * *"
   workflow_dispatch:
 
@@ -11,24 +10,40 @@ jobs:
     name: Run FF14 Tasks - Account 1
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
-      - uses: docker://ghcr.io/starhearthunt/ff14risingstone_sign_task:master
+      - name: Pull Docker image (optional, speeds up retries)
+        run: docker pull ghcr.io/starhearthunt/ff14risingstone_sign_task:master
+
+      - name: Run task with automatic retry
+        uses: nick-fields/retry@v3
         with:
-          cookie: ${{ secrets.COOKIE_ACCOUNT1 }}
-          user_agent: ${{ secrets.USER_AGENT_ACCOUNT1 }}
-          # 可选配置
-          check_house_remain: false
-          get_sign_reward: true
+          timeout_minutes: 5          # 单次执行超时时间
+          max_attempts: 3             # 最多尝试 3 次
+          retry_wait_seconds: 30      # 两次尝试间隔 30 秒
+          command: |
+            docker run --rm \
+              -e COOKIE="${{ secrets.COOKIE_ACCOUNT1 }}" \
+              -e USER_AGENT="${{ secrets.USER_AGENT_ACCOUNT1 }}" \
+              -e CHECK_HOUSE_REMAIN="false" \
+              -e GET_SIGN_REWARD="true" \
+              ghcr.io/starhearthunt/ff14risingstone_sign_task:master
 
   run-tasks-account2:
     name: Run FF14 Tasks - Account 2
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
-      - uses: docker://ghcr.io/starhearthunt/ff14risingstone_sign_task:master
+      - name: Pull Docker image (optional)
+        run: docker pull ghcr.io/starhearthunt/ff14risingstone_sign_task:master
+
+      - name: Run task with automatic retry
+        uses: nick-fields/retry@v3
         with:
-          cookie: ${{ secrets.COOKIE_ACCOUNT2 }}
-          user_agent: ${{ secrets.USER_AGENT_ACCOUNT2 }}
-          # 可选配置
-          check_house_remain: false
-          get_sign_reward: true
+          timeout_minutes: 5
+          max_attempts: 3
+          retry_wait_seconds: 30
+          command: |
+            docker run --rm \
+              -e COOKIE="${{ secrets.COOKIE_ACCOUNT2 }}" \
+              -e USER_AGENT="${{ secrets.USER_AGENT_ACCOUNT2 }}" \
+              -e CHECK_HOUSE_REMAIN="false" \
+              -e GET_SIGN_REWARD="true" \
+              ghcr.io/starhearthunt/ff14risingstone_sign_task:master
