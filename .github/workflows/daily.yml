@@ -3,7 +3,7 @@ name: Daily Tasks
 on:
   schedule:
     # Runs at 00:05 am UTC+8 every day
-    - cron: "5 16 * * *"
+    - cron: "6 16 * * *"
   workflow_dispatch:
 
 jobs:
